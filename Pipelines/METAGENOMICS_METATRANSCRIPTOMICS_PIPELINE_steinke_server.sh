@@ -2,35 +2,32 @@
 
 # Version 0.1
 # Written by Natalie Wright (nwrigh06@uoguelph.ca) and Chris Hempel (hempelc@uoguelph.ca)
+# 6 Jul 2022
 
-# This is a modificated pipeline for Chris Hempel's third PhD chapter, based on teh pipelines for the first chapter.
-# Only the trimming, rrnafiltering, and assembly step are performed
+# This is a modificated pipeline for Chris Hempel's third PhD chapter, based on
+# the pipelines for his first chapter.
+# You can find the original pipeline here:
+# https://github.com/hempelc/metagenomics-vs-totalRNASeq
+# Only the Trimming, rRNAFiltering, and Assembly step of the pipelines are
+# performed
 
 # It trims raw paired-end input sequences at 4 PHRED scores, filters rRNA
-# with 4 approaches, uses 8 assemblers, maps trimmed reads back to scaffolds
-# using 2 mappers, and assigns taxonomy to scaffolds using 2 databases with
-# 3 classification approaches.
+# with 4 approaches, and uses 7 assemblers.
 
-# The output is a folder called METAGENOMICS_METATRANSCRIPTOMICS_PIPELINE_FINAL_FILES/
-# that contains tab-separated, taxonomically annotated scaffolds and read coverage
-# for all combinations of the above described steps.
+# The output is a folder called METAGENOMICS_METATRANSCRIPTOMICS_PIPELINE_MODIFIED/FINAL_FILES/
+# that contains .fa files for all combinations of the above described steps.
 
 # The pipeline requires the following subscripts, which are all located in the
 # subscripts/ directory:
-	# assign_NCBI_staxids_to_CREST_v4.py, fasta_to_tab, mergeFilesOnColumn.pl,
-	# assign_taxonomy_to_NCBI_staxids.sh  fastqc_on_R1_R2_and_optional_trimming.sh,
-	# merge_on_outer.py, blast_filtering.bash, filter-fasta.awk,
-	# SILVA_SSU_LSU_kraken2_preparation.sh, deinterleave_fastq_reads.sh,
-	# LookupTaxonDetails3.py, SILVA_SSU_LSU_makeblastdb_preparation.sh
+	# fasta_to_tab, fastqc_on_R1_R2_and_optional_trimming.sh, deinterleave_fastq_reads.sh,
 
 # The pipeline requires the following programs/python packages (versions we used
 # when writing this script are indicated in brackets):
 	# FastQC (0.11.5), Trimmomatic (0.33), sortmeRNA (4.0.0), barrnap (0.9),
 	# rRNAFILTER (1.1), SPADES (3.14.0)[note: runs with the --meta and --rna
 	# options for METASPADES and RNASPADES], MEGAHIT (1.2.9), IDBA-UD (1.1.1),
-	# IDBA_tran (1.1.1), Trinity (2.10.0),	Trans-ABySS (2.0.1), bowtie2 (2.3.3.1),
-	# bwa (0.7.17), blast+ (2.10.0+), kraken2 (2.1.1), seqtk (1.2-r94),
-	# samtools (1.10), python module ete3 (3.1.2)
+	# IDBA_tran (1.1.1), Trinity (2.10.0),	Trans-ABySS (2.0.1), seqtk (1.2-r94),
+	# python module ete3 (3.1.2)
 
 	# Note 1: we had to edit IDBA prior to compiling it because it didn't work
 	# using long reads and the -l option. This seems to be a common problem and
@@ -117,7 +114,7 @@ step_description_and_time_first "START RUNNING SCRIPT"
 # Activate the conda ete3 environment within this script to be able to run ete3.
 # Based on https://github.com/conda/conda/issues/7980
 source /hdd1/chempel/programs/miniconda/etc/profile.d/conda.sh
-conda activate ete3 # ete3 is our conda environemnt in which we installed ete3
+conda activate ete3 # ete3 is our conda environment in which we installed ete3
 
 # Make output directory and directory for final files:
 mkdir METAGENOMICS_METATRANSCRIPTOMICS_PIPELINE_MODIFIED/
@@ -346,7 +343,6 @@ for trimming_results in step_1_trimming/trimmomatic/*; do
 		step_description_and_time_second "RUNNING TRANSABYSS"
     transabyss --pe ../../$R1_sorted ../../$R2_sorted --threads $threads \
     --outdir TRANSABYSS/
-		conda deactivate # ete3 env incompatible with blast filter script
     sed 's/ /_/g' TRANSABYSS/transabyss-final.fa \
 		> TRANSABYSS/transabyss-final_edited.fa # Edit for universal format
 		step_description_and_time_second "TRANSABYSS DONE"
