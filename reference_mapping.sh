@@ -26,7 +26,7 @@ rm "${refdir}"/*/*.fasta.*
 # Make sure no .sam files are in contigdir
 rm "${contigdir}"/*.sam
 # Generate out file
-echo -e "combo,level,species,coverage" > "${outdir}"/mapping_output.csv
+echo -e "combo,level,species,coverage[%]" > "${outdir}"/mapping_output.csv
 
 for level in "${levels[@]}"; do
   for species in "${species[@]}"; do
@@ -37,11 +37,14 @@ for level in "${levels[@]}"; do
     for contigfile in "${contigdir}"/*.fa*; do
       # Map contigs of each .fa file to the ref
       bwa mem "${ref}" "${contigfile}" > "${contigfile}".sam
+      samtools sort "${contigfile}".sam > "${contigfile}".bam
       # Calculate average coverage across genome/chromosomes/plasmids
-      coverage=$(samtools coverage "${contigfile}".sam | cut -f 6 | tail -n +2 | awk '{ total += $1 } END { print total/NR }')
+      totalbases=$(samtools coverage "${contigfile}".bam | cut -f 3 | tail -n +2 | awk '{ total += $1 } END { print total }')
+      coveredbases=$(samtools coverage "${contigfile}".bam | cut -f 5 | tail -n +2 | awk '{ total += $1 } END { print total }')
+      coverage=$(awk "BEGIN {print $coveredbases / $totalbases * 100}")
       echo "${contigfile##*/}","${level}","${species}","${coverage}" >> "${outdir}"/mapping_output.csv
       # Clean up generated .sam file
-      rm "${contigfile}".sam
+      rm "${contigfile}"*.[sb]am
     done
     # Clean up generated indices
     rm "${ref}".*
