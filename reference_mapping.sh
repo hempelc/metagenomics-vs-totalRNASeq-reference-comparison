@@ -23,8 +23,8 @@ mkdir -p "${outdir}"
 
 # Make sure no index files are in ref dirs
 rm "${refdir}"/*/*.fasta.*
-# Make sure no .sam files are in contigdir
-rm "${contigdir}"/*.sam
+# Make sure no .sam/.bam files are in contigdir
+rm "${contigdir}"/*.[bs]am
 # Generate out file
 echo -e "combo,level,species,coverage[%]" > "${outdir}"/mapping_output.csv
 
