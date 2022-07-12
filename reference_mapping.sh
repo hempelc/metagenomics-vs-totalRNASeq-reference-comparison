@@ -36,7 +36,7 @@ for level in "${levels[@]}"; do
     bwa index -p "${ref}" "${ref}"
     for contigfile in "${contigdir}"/*.fa*; do
       # Map contigs of each .fa file to the ref
-      bwa mem "${ref}" "${contigfile}" > "${contigfile}".sam
+      bwa mem -t 16 "${ref}" "${contigfile}" > "${contigfile}".sam
       samtools sort "${contigfile}".sam > "${contigfile}".bam
       # Calculate average coverage across genome/chromosomes/plasmids
       totalbases=$(samtools coverage "${contigfile}".bam | cut -f 3 | tail -n +2 | awk '{ total += $1 } END { print total }')
