@@ -4,6 +4,7 @@ import statsmodels.api as sm
 from scipy import stats
 import os
 from scipy.stats import pointbiserialr #v1.7.3
+import numpy as np
 
 
 workdir = "/Users/christopherhempel/Google Drive/PhD UoG/Shea project/data_processing_outdir/"
@@ -146,8 +147,8 @@ for spe in df_metagenomics_ssu.drop(["assemblytool", "rrnasortingtool", "trimmin
     cor_df_metagenomics["species"] = [spe]*len(cor_df_metagenomics)
 
     cor_df_metagenomics.loc[cor_df_metagenomics["p-value"] <= 0.001 , 'significance_cat'] = 1
-    cor_df_metagenomics.loc[cor_df_metagenomics["p-value"] > 0.001 , 'significance_cat'] = 0.7
-    cor_df_metagenomics.loc[cor_df_metagenomics["p-value"] > 0.01 , 'significance_cat'] = 0.4
+    cor_df_metagenomics.loc[cor_df_metagenomics["p-value"] >= 0.001 , 'significance_cat'] = 0.6
+    cor_df_metagenomics.loc[cor_df_metagenomics["p-value"] >= 0.01 , 'significance_cat'] = 0.35
     cor_df_metagenomics.loc[cor_df_metagenomics["p-value"] > 0.05, 'significance_cat'] = 0.1
 
     df_metagenomics_cor = pd.concat([df_metagenomics_cor, cor_df_metagenomics])
@@ -165,8 +166,8 @@ for spe in df_metagenomics_ssu.drop(["assemblytool", "rrnasortingtool", "trimmin
     cor_df_totalrnaseq["species"] = [spe]*len(cor_df_totalrnaseq)
 
     cor_df_totalrnaseq.loc[cor_df_totalrnaseq["p-value"] <= 0.001 , 'significance_cat'] = 1
-    cor_df_totalrnaseq.loc[cor_df_totalrnaseq["p-value"] > 0.001 , 'significance_cat'] = 0.6
-    cor_df_totalrnaseq.loc[cor_df_totalrnaseq["p-value"] > 0.01 , 'significance_cat'] = 0.35
+    cor_df_totalrnaseq.loc[cor_df_totalrnaseq["p-value"] >= 0.001 , 'significance_cat'] = 0.6
+    cor_df_totalrnaseq.loc[cor_df_totalrnaseq["p-value"] >= 0.01 , 'significance_cat'] = 0.35
     cor_df_totalrnaseq.loc[cor_df_totalrnaseq["p-value"] > 0.05, 'significance_cat'] = 0.1
 
     df_totalrnaseq_cor = pd.concat([df_totalrnaseq_cor, cor_df_totalrnaseq])
@@ -175,10 +176,10 @@ for spe in df_metagenomics_ssu.drop(["assemblytool", "rrnasortingtool", "trimmin
 # Plot
 bubble_metagenomcis_cor = px.scatter(df_metagenomics_cor, x="index", y="species", size="significance_cat",
     color="coefficient", height=550, width=700, range_color=(-1,1),
-    color_continuous_scale="RdBu")
+    color_continuous_scale="RdBu", template='simple_white')
 bubble_metagenomcis_cor.update_yaxes(categoryorder='array', categoryarray= list(reversed(['Listeria monocytogenes', 'Pseudomonas aeruginosa', 'Bacillus subtilis', 'Saccharomyces cerevisiae', 'Salmonella enterica',
 'Escherichia coli', 'Limosilactobacillus fermentum', 'Enterococcus faecalis', 'Cryptococcus neoformans', 'Staphylococcus aureus'])))
-bubble_metagenomcis_cor.update_xaxes(categoryorder='array', categoryarray= list(reversed(['assemblytool_idba-tran', 'assemblytool_idba-ud', 'assemblytool_megahit', 'assemblytool_metaspades', 'assemblytool_rnaspades',
+bubble_metagenomcis_cor.update_xaxes(tickangle=35, categoryorder='array', categoryarray= list(reversed(['assemblytool_idba-tran', 'assemblytool_idba-ud', 'assemblytool_megahit', 'assemblytool_metaspades', 'assemblytool_rnaspades',
 'assemblytool_spades', 'assemblytool_transabyss', 'rrnasortingtool_barrnap', 'rrnasortingtool_rrnafilter', 'rrnasortingtool_sortmerna', 'rrnasortingtool_unsorted'])))
 bubble_metagenomcis_cor.show()
 bubble_metagenomcis_cor.write_image(os.path.join(outdir, "correlation_metagenomics.svg"))
@@ -186,10 +187,10 @@ bubble_metagenomcis_cor.write_image(os.path.join(outdir, "correlation_metagenomi
 
 bubble_totalrnaseq_cor = px.scatter(df_totalrnaseq_cor, x="index", y="species", size="significance_cat",
     color="coefficient", height=550, width=700, range_color=(-1,1),
-    color_continuous_scale="RdBu")
+    color_continuous_scale="RdBu", template='simple_white')
 bubble_totalrnaseq_cor.update_yaxes(categoryorder='array', categoryarray= list(reversed(['Listeria monocytogenes', 'Pseudomonas aeruginosa', 'Bacillus subtilis', 'Saccharomyces cerevisiae', 'Salmonella enterica',
 'Escherichia coli', 'Limosilactobacillus fermentum', 'Enterococcus faecalis', 'Cryptococcus neoformans', 'Staphylococcus aureus'])))
-bubble_totalrnaseq_cor.update_xaxes(categoryorder='array', categoryarray= list(reversed(['assemblytool_idba-tran', 'assemblytool_idba-ud', 'assemblytool_megahit', 'assemblytool_metaspades', 'assemblytool_rnaspades',
+bubble_totalrnaseq_cor.update_xaxes(tickangle=35, categoryorder='array', categoryarray= list(reversed(['assemblytool_idba-tran', 'assemblytool_idba-ud', 'assemblytool_megahit', 'assemblytool_metaspades', 'assemblytool_rnaspades',
 'assemblytool_spades', 'assemblytool_transabyss', 'rrnasortingtool_barrnap', 'rrnasortingtool_rrnafilter', 'rrnasortingtool_sortmerna', 'rrnasortingtool_unsorted'])))
 bubble_totalrnaseq_cor.show()
 bubble_totalrnaseq_cor.write_image(os.path.join(outdir, "correlation_totalrnaseq.svg"))
@@ -208,10 +209,10 @@ df_metagenomics_ssu.index = df_metagenomics_ssu["rrnasortingtool"] + "_" + df_me
 df_totalrnaseq_ssu.index = df_totalrnaseq_ssu["assemblytool"] + "_" + df_totalrnaseq_ssu["rrnasortingtool"]
 
 # Heatmap generation
-heatmap_metagenomics_genome = px.imshow(df_metagenomics_genome.drop(["assemblytool", "rrnasortingtool", "trimmingscore"], axis=1).transpose(), aspect="auto", width=1150, labels=dict(x="Species (% Abundance)", y="Pipeline number", color="Genome coverage [%]"), zmin=0, zmax=100)
-heatmap_metagenomics_ssu = px.imshow(df_metagenomics_ssu.drop(["assemblytool", "rrnasortingtool", "trimmingscore"], axis=1).transpose(), aspect="auto", width=1150, labels=dict(x="Species (% Abundance)", y="Pipeline number", color="SSU coverage [%]"), zmin=0, zmax=100)
-heatmap_totalrnaseq_genome = px.imshow(df_totalrnaseq_genome.drop(["assemblytool", "rrnasortingtool", "trimmingscore"], axis=1).transpose(), aspect="auto", width=1150, labels=dict(x="Species (% Abundance)", y="Pipeline number", color="Genome coverage [%]"), zmin=0, zmax=100)
-heatmap_totalrnaseq_ssu = px.imshow(df_totalrnaseq_ssu.drop(["assemblytool", "rrnasortingtool", "trimmingscore"], axis=1).transpose(), aspect="auto", width=1150, labels=dict(x="Species (% Abundance)", y="Pipeline number", color="SSU coverage [%]"), zmin=0, zmax=100)
+heatmap_metagenomics_genome = px.imshow(df_metagenomics_genome.drop(["assemblytool", "rrnasortingtool", "trimmingscore"], axis=1).transpose(), aspect="auto", width=1150, labels=dict(x="Pipeline", y="Mock community species", color="Genome coverage [%]"), zmin=0, zmax=100)
+heatmap_metagenomics_ssu = px.imshow(df_metagenomics_ssu.drop(["assemblytool", "rrnasortingtool", "trimmingscore"], axis=1).transpose(), aspect="auto", width=1150, labels=dict(x="Pipeline", y="Mock community species", color="SSU coverage [%]"), zmin=0, zmax=100)
+heatmap_totalrnaseq_genome = px.imshow(df_totalrnaseq_genome.drop(["assemblytool", "rrnasortingtool", "trimmingscore"], axis=1).transpose(), aspect="auto", width=1150, labels=dict(x="Pipeline", y="Mock community species", color="Genome coverage [%]"), zmin=0, zmax=100)
+heatmap_totalrnaseq_ssu = px.imshow(df_totalrnaseq_ssu.drop(["assemblytool", "rrnasortingtool", "trimmingscore"], axis=1).transpose(), aspect="auto", width=1150, labels=dict(x="Pipeline", y="Mock community species", color="SSU coverage [%]"), zmin=0, zmax=100)
 
 # Plot
 heatmap_metagenomics_genome.show()
