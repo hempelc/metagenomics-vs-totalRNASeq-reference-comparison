@@ -138,8 +138,6 @@ for spe in df_metagenomics_ssu.drop(["assemblytool", "rrnasortingtool", "trimmin
     for col in X_metagenomics_dummies.columns:
         Y=Y_metagenomics.to_numpy()
         X=np.array(X_metagenomics_dummies[col])
-        # logit_model_result=sm.Logit(y,X).fit()
-        # cor=logit_model_result.summary2().tables[1]['P>|z|'][0]
         cor=pointbiserialr(X,Y)
         cor_dic_metagenomics[col]=cor
     cor_df_metagenomics = pd.DataFrame(cor_dic_metagenomics , index=["coefficient", "p-value"]).transpose().reset_index()
@@ -148,8 +146,8 @@ for spe in df_metagenomics_ssu.drop(["assemblytool", "rrnasortingtool", "trimmin
     cor_df_metagenomics["species"] = [spe]*len(cor_df_metagenomics)
 
     cor_df_metagenomics.loc[cor_df_metagenomics["p-value"] <= 0.001 , 'significance_cat'] = 1
-    cor_df_metagenomics.loc[cor_df_metagenomics["p-value"] > 0.001 , 'significance_cat'] = 0.5
-    cor_df_metagenomics.loc[cor_df_metagenomics["p-value"] > 0.01 , 'significance_cat'] = 0.25
+    cor_df_metagenomics.loc[cor_df_metagenomics["p-value"] > 0.001 , 'significance_cat'] = 0.7
+    cor_df_metagenomics.loc[cor_df_metagenomics["p-value"] > 0.01 , 'significance_cat'] = 0.4
     cor_df_metagenomics.loc[cor_df_metagenomics["p-value"] > 0.05, 'significance_cat'] = 0.1
 
     df_metagenomics_cor = pd.concat([df_metagenomics_cor, cor_df_metagenomics])
@@ -159,8 +157,6 @@ for spe in df_metagenomics_ssu.drop(["assemblytool", "rrnasortingtool", "trimmin
     for col in X_totalrnaseq_dummies.columns:
         Y=Y_totalrnaseq.to_numpy()
         X=np.array(X_totalrnaseq_dummies[col])
-        # logit_model_result=sm.Logit(y,X).fit()
-        # cor=logit_model_result.summary2().tables[1]['P>|z|'][0]
         cor=pointbiserialr(X,Y)
         cor_dic_totalrnaseq[col]=cor
     cor_df_totalrnaseq = pd.DataFrame(cor_dic_totalrnaseq , index=["coefficient", "p-value"]).transpose().reset_index()
@@ -169,8 +165,8 @@ for spe in df_metagenomics_ssu.drop(["assemblytool", "rrnasortingtool", "trimmin
     cor_df_totalrnaseq["species"] = [spe]*len(cor_df_totalrnaseq)
 
     cor_df_totalrnaseq.loc[cor_df_totalrnaseq["p-value"] <= 0.001 , 'significance_cat'] = 1
-    cor_df_totalrnaseq.loc[cor_df_totalrnaseq["p-value"] > 0.001 , 'significance_cat'] = 0.5
-    cor_df_totalrnaseq.loc[cor_df_totalrnaseq["p-value"] > 0.01 , 'significance_cat'] = 0.25
+    cor_df_totalrnaseq.loc[cor_df_totalrnaseq["p-value"] > 0.001 , 'significance_cat'] = 0.6
+    cor_df_totalrnaseq.loc[cor_df_totalrnaseq["p-value"] > 0.01 , 'significance_cat'] = 0.35
     cor_df_totalrnaseq.loc[cor_df_totalrnaseq["p-value"] > 0.05, 'significance_cat'] = 0.1
 
     df_totalrnaseq_cor = pd.concat([df_totalrnaseq_cor, cor_df_totalrnaseq])
