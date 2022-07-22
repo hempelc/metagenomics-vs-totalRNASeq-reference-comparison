@@ -4,8 +4,8 @@
 # Written by Natalie Wright (nwrigh06@uoguelph.ca) and Chris Hempel (hempelc@uoguelph.ca)
 # 6 Jul 2022
 
-# This is a modificated pipeline for Chris Hempel's third PhD chapter, based on
-# the pipelines for his first chapter.
+# This is a modified pipeline for Chris Hempel's second PhD chapter, based on
+# the pipelines from his first chapter.
 # You can find the original pipeline here:
 # https://github.com/hempelc/metagenomics-vs-totalRNASeq
 # Only the Trimming, rRNAFiltering, and Assembly step of the pipelines are
@@ -21,9 +21,12 @@
 # subscripts/ directory:
 	# fasta_to_tab, fastqc_on_R1_R2_and_optional_trimming.sh, deinterleave_fastq_reads.sh,
 
+# IMPORTANT: you have to manually specify the location of Trimmomatic
+trimmomatic="/hdd1/programs_for_pilot/Trimmomatic-0.39/trimmomatic-0.39.jar"
+
 # The pipeline requires the following programs/python packages (versions we used
 # when writing this script are indicated in brackets):
-	# FastQC (0.11.5), Trimmomatic (0.33), sortmeRNA (4.0.0), barrnap (0.9),
+	# FastQC (0.11.5), Trimmomatic (0.39), sortmeRNA (4.0.0), barrnap (0.9),
 	# rRNAFILTER (1.1), SPADES (3.14.0)[note: runs with the --meta and --rna
 	# options for METASPADES and RNASPADES], MEGAHIT (1.2.9), IDBA-UD (1.1.1),
 	# IDBA_tran (1.1.1), Trinity (2.10.0),	Trans-ABySS (2.0.1), seqtk (1.2-r94),
@@ -36,7 +39,11 @@
 	# https://github.com/loneknightpy/idba/issues/26
 
 	# Note 2: we had to install ete3 via conda in a conda environment, so we have
-	# to activate that environment when running this script
+	# to activate that environment when running this script:
+	# Based on https://github.com/conda/conda/issues/7980
+	source /hdd1/chempel/programs/miniconda/etc/profile.d/conda.sh
+	conda activate ete3 # ete3 is our conda environment in which we installed ete3
+
 
 cmd="$0 $@" # Make variable containing the entire entered command to print command to logfile
 usage="$(basename "$0") -1 <R1.fastq> -2 <R2.fastq> [-t <n>]
@@ -111,10 +118,6 @@ echo -e "Script started with full command: $cmd\n"
 ######################### Start of the actual script ################################
 step_description_and_time_first "START RUNNING SCRIPT"
 
-# Activate the conda ete3 environment within this script to be able to run ete3.
-# Based on https://github.com/conda/conda/issues/7980
-source /hdd1/chempel/programs/miniconda/etc/profile.d/conda.sh
-conda activate ete3 # ete3 is our conda environment in which we installed ete3
 
 # Make output directory and directory for final files:
 mkdir METAGENOMICS_METATRANSCRIPTOMICS_PIPELINE_MODIFIED/
@@ -129,7 +132,7 @@ step_description_and_time_first "START STEP 1: TRIMMING AND ERROR CORRECTION"
 
 # Trimming is done with a separate subscript:
 fastqc_on_R1_R2_and_optional_trimming.sh \
--T /hdd1/programs_for_pilot/Trimmomatic-0.39/trimmomatic-0.39.jar \
+-T $trimmomatic \
 -1 $forward_reads -2 $reverse_reads -t yes -p $threads
 mv fastqc_on_R1_R2_and_optional_trimming_output step_1_trimming/
 
