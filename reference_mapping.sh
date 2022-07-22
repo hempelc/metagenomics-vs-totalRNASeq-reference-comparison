@@ -1,12 +1,13 @@
 #! /bin/bash
 
+# Written by Christopher Hempel (hempelc@uoguelph.ca) on 22 Jul 2022
+
+# This script maps scaffolds to references and determines the coverage of references
+
 # Usage: mapping.sh refdir contigdir outdir
-# refdir must contain the two folders with zymo reference genomes and ssrRNAs
-# contigdir must contain all .fa contig files of pipelines
+# refdir must contain the two folders with zymo reference "Genomes" and "ssuRNA_consensus"
+# contigdir must contain all .fa scaffold files of pipelines
 # outdir is the output directory, is generated if it does not already exists
-# refdir="/Users/christopherhempel/Google Drive/PhD UoG/Project Shea/ZymoBIOMICS_refs"
-# contigdir="/Users/christopherhempel/Desktop/METAGENOMICS_METATRANSCRIPTOMICS_PIPELINE_MODIFIED_FINAL_FILES"
-# outdir="/Users/christopherhempel/Desktop/outdir"
 
 refdir=${1%/}
 contigdir=${2%/}
@@ -30,23 +31,23 @@ echo -e "combo,level,species,coverage[%]" > "${outdir}"/mapping_output.csv
 
 for level in "${levels[@]}"; do
   for species in "${species[@]}"; do
-    # Pick the respective reference for each species
+    ## Pick the respective reference for each species
     ref="${refdir}"/"${level}"/$(ls "${refdir}"/"${level}"/ | grep "${species}")
-    # Index it
+    ## Index it
     bwa index -p "${ref}" "${ref}"
     for contigfile in "${contigdir}"/*.fa*; do
-      # Map contigs of each .fa file to the ref
+      ### Map contigs of each .fa file to the ref
       bwa mem -t 16 "${ref}" "${contigfile}" > "${contigfile}".sam
       samtools sort "${contigfile}".sam > "${contigfile}".bam
-      # Calculate average coverage across genome/chromosomes/plasmids
+      ### Calculate average coverage across genome/chromosomes/plasmids
       totalbases=$(samtools coverage "${contigfile}".bam | cut -f 3 | tail -n +2 | awk '{ total += $1 } END { print total }')
       coveredbases=$(samtools coverage "${contigfile}".bam | cut -f 5 | tail -n +2 | awk '{ total += $1 } END { print total }')
       coverage=$(awk "BEGIN {print $coveredbases / $totalbases * 100}")
       echo "${contigfile##*/}","${level}","${species}","${coverage}" >> "${outdir}"/mapping_output.csv
-      # Clean up generated .sam file
+      ### Clean up generated .sam file
       rm "${contigfile}"*.[sb]am
     done
-    # Clean up generated indices
+    ## Clean up generated indices
     rm "${ref}".*
   done
 done
