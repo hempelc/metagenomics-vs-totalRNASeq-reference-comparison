@@ -28,7 +28,7 @@ reference_df = pd.DataFrame({"genomesize": [2992342, 6792330, 4045677, 12071326,
     'Escherichia coli', 'Limosilactobacillus fermentum', 'Enterococcus faecalis', 'Cryptococcus neoformans', 'Staphylococcus aureus', 'Staphylococcus aureus',
     'Cryptococcus neoformans', 'Enterococcus faecalis', 'Limosilactobacillus fermentum', 'Escherichia coli'],
     "domain": 3*["Bacteria"]+["Eukaryota"]+4*["Bacteria"]+["Eukaryota"]+["Bacteria"]+5*["ref"]})
-reference = px.scatter(reference_df, x="abundance", y="species", size="genomesize", text="abundance", color="domain", log_x=True, color_discrete_sequence=cols)
+reference = px.scatter(reference_df, x="abundance", y="species", size="genomesize", text="genomesize", color="domain", log_x=True, color_discrete_sequence=cols)
 reference.update_traces(textposition='top center')
 reference.update_yaxes(categoryorder='array', categoryarray= list(reversed(['Listeria monocytogenes', 'Pseudomonas aeruginosa', 'Bacillus subtilis', 'Saccharomyces cerevisiae', 'Salmonella enterica',
 'Escherichia coli', 'Limosilactobacillus fermentum', 'Enterococcus faecalis', 'Cryptococcus neoformans', 'Staphylococcus aureus'])))
@@ -239,3 +239,20 @@ heatmap_metagenomics_genome.write_image(os.path.join(outdir, "coverage_metagenom
 heatmap_metagenomics_ssu.write_image(os.path.join(outdir, "coverage_metagenomics_ssu.png"))
 heatmap_totalrnaseq_genome.write_image(os.path.join(outdir, "coverage_totalrnaseq_genome.png"))
 heatmap_totalrnaseq_ssu.write_image(os.path.join(outdir, "coverage_totalrnaseq_ssu.png"))
+
+# Correlation between genome size and coverage
+genome_sizes = [2992342, 6792330, 4045677, 12071326, 4809318, 4875441, 1905333, 2845392, 19051922, 2730326]
+abundances = [94.8, 4.2, 0.7, 0.23, 0.059, 0.058, 0.015, 0.001, 0.00015, 0.0001]
+## Metagenomics
+ave_coverage_metagenomics = df_metagenomics_ssu.drop(["assemblytool", "rrnasortingtool", "trimmingscore"], axis=1).mean()
+genome_size_pearson_metagenomics = stats.pearsonr(ave_coverage_metagenomics, genome_sizes)
+abundance_pearson_metagenomics = stats.pearsonr(ave_coverage_metagenomics, abundances)
+print("Genome size pearson metagenomics:", genome_size_pearson_metagenomics)
+print("Abundance pearson metagenomics:", abundance_pearson_metagenomics)
+
+## Total RNA-Seq
+ave_coverage_totalrnaseq = df_totalrnaseq_ssu.drop(["assemblytool", "rrnasortingtool", "trimmingscore"], axis=1).mean()
+genome_size_pearson_totalrnaseq = stats.pearsonr(ave_coverage_totalrnaseq, genome_sizes)
+abundance_pearson_totalrnaseq = stats.pearsonr(ave_coverage_totalrnaseq, abundances)
+print("Genome size pearson totalrnaseq:", genome_size_pearson_totalrnaseq)
+print("Abundance pearson totalrnaseq:", abundance_pearson_totalrnaseq)
