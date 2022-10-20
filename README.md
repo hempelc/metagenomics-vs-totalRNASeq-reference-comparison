@@ -6,6 +6,6 @@ The project is part of the following publication:<br>
 
 The entire workflow is shown in the following:
 
-<img src="https://github.com/hempelc/metagenomics-vs-totalRNASeq-reference-comparison/blob/master/workflow.png" alt="workflow" width="800"/>
+<img src="https://github.com/hempelc/metagenomics-vs-totalRNASeq-reference-comparison/blob/main/workflow.png" alt="workflow" width="800"/>
 
-![workflow](https://github.com/hempelc/metagenomics-vs-totalRNASeq-reference-comparison/blob/master/workflow.png?raw=true)a
+![workflow](https://github.com/hempelc/metagenomics-vs-totalRNASeq-reference-comparison/blob/main/workflow.png?raw=true)a
