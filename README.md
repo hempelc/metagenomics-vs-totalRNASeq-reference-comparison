@@ -4,6 +4,6 @@ This project represents the second chapter of my PhD, in which I compare metagen
 The project is part of the following publication:<br>
 <b>Hempel C. A.</b>, Carson S. E. E., Elliott T. A., Adamowicz S. J., and Steinke D. (in review at the journal Methods in Ecology and Evolution): Metagenomics versus total RNA sequencing: most accurate data-processing tools, microbial identification accuracy and perspectives for ecological assessments. Preprint available at [https://doi.org/10.1101/2022.08.26.505493](https://doi.org/10.1101/2022.08.26.505493)
 
-The workflow from sample preparation to completeness evaluation is shown in the following:
+The entire workflow is shown in the following:
 
-<img src="https://github.com/hempelc/metagenomics-vs-totalRNASeq-reference-comparison/blob/master/workflow.png" alt="workflow" width="50"/>
+<img src="https://github.com/hempelc/metagenomics-vs-totalRNASeq-reference-comparison/blob/master/workflow.png" alt="workflow" width="800"/>
