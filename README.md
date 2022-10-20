@@ -6,4 +6,4 @@ The project is part of the following publication:<br>
 
 The workflow from sample preparation to completeness evaluation is shown in the following:
 
-<img src="https://github.com/hempelc/metagenomics-vs-totalRNASeq-reference-comparison/blob/master/workflow.png" alt="workflow" width="200"/>
+<img src="https://github.com/hempelc/metagenomics-vs-totalRNASeq-reference-comparison/blob/master/workflow.png" alt="workflow" width="50"/>
