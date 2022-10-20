@@ -8,4 +8,4 @@ The entire workflow is shown in the following:
 
 <img src="https://github.com/hempelc/metagenomics-vs-totalRNASeq-reference-comparison/blob/master/workflow.png" alt="workflow" width="800"/>
 
-![workflow](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg](https://github.com/hempelc/metagenomics-vs-totalRNASeq-reference-comparison/blob/master/workflow.png?raw=true)
+![workflow](https://github.com/hempelc/metagenomics-vs-totalRNASeq-reference-comparison/blob/master/workflow.png?raw=true)
