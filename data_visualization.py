@@ -218,7 +218,7 @@ df_totalrnaseq_ols.loc[df_totalrnaseq_ols["pvals"] > 0.05, 'significance_cat'] =
 
 ## Plot
 bubble_metagenomics_ols = px.scatter(df_metagenomics_ols, x="index", y="species", size="significance_cat",
-    color="coefs", height=550, width=840, range_color=(-5,5),
+    color="coefs", height=550, width=840, range_color=(-df_totalrnaseq_ols["coefs"].max(),df_totalrnaseq_ols["coefs"].max()),
     color_continuous_scale="RdBu", template='simple_white')
 ### Change axes orders
 bubble_metagenomics_ols.update_yaxes(categoryorder='array', categoryarray= list(reversed(['Listeria monocytogenes', 'Pseudomonas aeruginosa', 'Bacillus subtilis', 'Saccharomyces cerevisiae', 'Salmonella enterica',
@@ -231,7 +231,7 @@ bubble_metagenomics_ols.write_image(os.path.join(outdir, "ols_metagenomics.svg")
 bubble_metagenomics_ols.write_image(os.path.join(outdir, "ols_metagenomics.png"), height=550, width=840)
 
 bubble_totalrnaseq_ols = px.scatter(df_totalrnaseq_ols, x="index", y="species", size="significance_cat",
-    color="coefs", height=550, width=840, range_color=(-5,5),
+    color="coefs", height=550, width=840, range_color=(-df_totalrnaseq_ols["coefs"].max(),df_totalrnaseq_ols["coefs"].max()),
     color_continuous_scale="RdBu", template='simple_white')
 ### Change axes orders
 bubble_totalrnaseq_ols.update_yaxes(categoryorder='array', categoryarray= list(reversed(['Listeria monocytogenes', 'Pseudomonas aeruginosa', 'Bacillus subtilis', 'Saccharomyces cerevisiae', 'Salmonella enterica',
@@ -381,32 +381,79 @@ ave_coverage_metagenomics = df_metagenomics_ssu.drop(["assemblytool", "rrnasorti
 ### Scatterplot and OLS
 #### vs. genome size
 fig = px.scatter(pd.DataFrame({"coverage": ave_coverage_metagenomics, "genome_sizes": genome_sizes}).reset_index(),
-    x='genome_sizes', y='coverage', trendline='ols', title="Metagenomics genome size")
+    x='genome_sizes', y='coverage', trendline='ols', color="index", symbol = "index",
+    symbol_sequence= [0,1,2,3,4,13,17,19,20,22],
+    color_discrete_sequence = ['#f455ad', '#002684', '#B74258', '#62ecb4',
+    '#9c5fb4', '#600008', '#5d9344', '#ff8a4e', '#01a2ed', '#AF903F'],
+    title="Metagenomics genome size", template="plotly_white", width=400, height=400)
 fig.update_yaxes(range=[0, 100])
+fig.update_layout(showlegend=False)
+# Note: when using the color parameter above, the graph won't generate a trendline.
+# Therefore, the code has to be run twice, once with the color parameter and the
+# following block of code commented out and once without the color parameter and
+# using the following block of code to generate the p-value for the trendline
 ##### Get R2 and pval
-model = px.get_trendline_results(fig)
-results = model.iloc[0]["px_fit_results"]
-p_beta = results.pvalues[1]
-r_squared = results.rsquared
-pval = 'p-value = ' + '{:.5f}'.format(p_beta)
-fig.add_annotation(text=pval, x=19900000, y=95, showarrow=False, xanchor='right' , yanchor='auto')
+# model = px.get_trendline_results(fig)
+# results = model.iloc[0]["px_fit_results"]
+# p_beta = results.pvalues[1]
+# r_squared = results.rsquared
+# pval = 'p-value = ' + '{:.5f}'.format(p_beta)
+# fig.add_annotation(text=pval, x=19900000, y=95, showarrow=False, xanchor='right' , yanchor='auto')
+fig.update_traces(marker_size=9)
 fig.show()
-fig.write_image(os.path.join(outdir, "metagenomics_coverage_vs_size.png"))
-fig.write_image(os.path.join(outdir, "metagenomics_coverage_vs_size.png"))
+fig.write_image(os.path.join(outdir, "scatter_metagenomics_coverage_vs_size.png"))
+fig.write_image(os.path.join(outdir, "scatter_metagenomics_coverage_vs_size.svg"))
 #### vs. abundance
-fig = px.scatter(pd.DataFrame({"coverage": ave_coverage_metagenomics, "abundance": abundances}),
-    x='abundance', y='coverage', trendline='ols', title="Metagenomics abundance", log_x=True)
+fig = px.scatter(pd.DataFrame({"coverage": ave_coverage_metagenomics, "abundance": abundances}).reset_index(),
+    x='abundance', y='coverage', trendline='ols', color="index", symbol = "index",
+    symbol_sequence= [0,1,2,3,4,13,17,19,20,22],
+    color_discrete_sequence = ['#f455ad', '#002684', '#B74258', '#62ecb4',
+    '#9c5fb4', '#600008', '#5d9344', '#ff8a4e', '#01a2ed', '#AF903F'],
+    title="Metagenomics abundance", log_x=True, template="plotly_white",
+    width=400, height=400)
 fig.update_yaxes(range=[0, 100])
+fig.update_layout(showlegend=False)
+# Note: when using the color parameter above, the graph won't generate a trendline.
+# Therefore, the code has to be run twice, once with the color parameter and the
+# following block of code commented out and once without the color parameter and
+# using the following block of code to generate the p-value for the trendline
 ##### Get R2 and pval
-model = px.get_trendline_results(fig)
-results = model.iloc[0]["px_fit_results"]
-p_beta = results.pvalues[1]
-r_squared = results.rsquared
-pval = 'p-value = ' + '{:.5f}'.format(p_beta)
-fig.add_annotation(text=pval, x=0.9, y=95, showarrow=False, xanchor='right' , yanchor='auto')
+# model = px.get_trendline_results(fig)
+# results = model.iloc[0]["px_fit_results"]
+# p_beta = results.pvalues[1]
+# r_squared = results.rsquared
+# pval = 'p-value = ' + '{:.5f}'.format(p_beta)
+# fig.add_annotation(text=pval, x=0.9, y=95, showarrow=False, xanchor='right' , yanchor='auto')
+fig.update_traces(marker_size=9)
 fig.show()
-fig.write_image(os.path.join(outdir, "metagenomics_coverage_vs_abun.png"))
-fig.write_image(os.path.join(outdir, "metagenomics_coverage_vs_abun.png"))
+fig.write_image(os.path.join(outdir, "scatter_metagenomics_coverage_vs_abun.png"))
+fig.write_image(os.path.join(outdir, "scatter_metagenomics_coverage_vs_abun.svg"))
+#### vs. abundance*genome size
+fig = px.scatter(pd.DataFrame({"coverage": ave_coverage_metagenomics,
+    "abundanceXsize": [a*g for a,g in zip([x/100 for x in abundances],genome_sizes)]}).reset_index(),
+    x='abundanceXsize', y='coverage', trendline='ols', color="index", symbol = "index",
+    symbol_sequence= [0,1,2,3,4,13,17,19,20,22],
+    color_discrete_sequence = ['#f455ad', '#002684', '#B74258', '#62ecb4',
+    '#9c5fb4', '#600008', '#5d9344', '#ff8a4e', '#01a2ed', '#AF903F'],
+    title="Metagenomics abundanceXsize", log_x=True, template="plotly_white",
+    width=400, height=400)
+fig.update_yaxes(range=[0, 100])
+fig.update_layout(showlegend=False)
+# Note: when using the color parameter above, the graph won't generate a trendline.
+# Therefore, the code has to be run twice, once with the color parameter and the
+# following block of code commented out and once without the color parameter and
+# using the following block of code to generate the p-value for the trendline
+# #### Get R2 and pval
+# model = px.get_trendline_results(fig)
+# results = model.iloc[0]["px_fit_results"]
+# p_beta = results.pvalues[1]
+# r_squared = results.rsquared
+# pval = 'p-value = ' + '{:.5f}'.format(p_beta)
+# fig.add_annotation(text=pval, x=5, y=95, showarrow=False, xanchor='right' , yanchor='auto')
+fig.update_traces(marker_size=9)
+fig.show()
+fig.write_image(os.path.join(outdir, "scatter_metagenomics_coverage_vs_abunXsize.png"))
+fig.write_image(os.path.join(outdir, "scatter_metagenomics_coverage_vs_abunXsize.svg"))
 
 ## Total RNA-Seq
 ave_coverage_totalrnaseq = df_totalrnaseq_ssu.drop(["assemblytool", "rrnasortingtool", "trimmingscore"], axis=1).mean()
@@ -417,33 +464,82 @@ ave_coverage_totalrnaseq = df_totalrnaseq_ssu.drop(["assemblytool", "rrnasorting
 # print("Abundance pearson totalrnaseq:", abundance_pearson_totalrnaseq)
 ### Scatterplot and OLS
 #### vs. genome size
-fig = px.scatter(pd.DataFrame({"coverage": ave_coverage_totalrnaseq, "genome_sizes": genome_sizes}),
-    x='genome_sizes', y='coverage', trendline='ols', title="Total RNA-Seq genome size")
+fig = px.scatter(pd.DataFrame({"coverage": ave_coverage_totalrnaseq, "genome_sizes": genome_sizes}).reset_index(),
+    x='genome_sizes', y='coverage', trendline='ols', color="index", symbol = "index",
+    symbol_sequence= [0,1,2,3,4,13,17,19,20,22],
+    color_discrete_sequence = ['#f455ad', '#002684', '#B74258', '#62ecb4',
+    '#9c5fb4', '#600008', '#5d9344', '#ff8a4e', '#01a2ed', '#AF903F'],
+    title="Total RNA-Seq genome size", template="plotly_white", width=400, height=400)
 fig.update_yaxes(range=[0, 100])
+fig.update_layout(showlegend=False)
+# Note: when using the color parameter above, the graph won't generate a trendline.
+# Therefore, the code has to be run twice, once with the color parameter and the
+# following block of code commented out and once without the color parameter and
+# using the following block of code to generate the p-value for the trendline
 ##### Get R2 and pval
-model = px.get_trendline_results(fig)
-results = model.iloc[0]["px_fit_results"]
-p_beta = results.pvalues[1]
-r_squared = results.rsquared
-pval = 'p-value = ' + '{:.5f}'.format(p_beta)
-fig.add_annotation(text=pval, x=19900000, y=95, showarrow=False, xanchor='right' , yanchor='auto')
+# model = px.get_trendline_results(fig)
+# results = model.iloc[0]["px_fit_results"]
+# p_beta = results.pvalues[1]
+# r_squared = results.rsquared
+# pval = 'p-value = ' + '{:.5f}'.format(p_beta)
+# fig.add_annotation(text=pval, x=19900000, y=95, showarrow=False, xanchor='right' , yanchor='auto')
+fig.update_traces(marker_size=9)
 fig.show()
-fig.write_image(os.path.join(outdir, "totalrnaseq_coverage_vs_size.png"))
-fig.write_image(os.path.join(outdir, "totalrnaseq_coverage_vs_size.png"))
+fig.write_image(os.path.join(outdir, "scatter_totalrnaseq_coverage_vs_size.png"))
+fig.write_image(os.path.join(outdir, "scatter_totalrnaseq_coverage_vs_size.svg"))
 #### vs. abundance
-fig = px.scatter(pd.DataFrame({"coverage": ave_coverage_totalrnaseq, "abundance": abundances}),
-    x='abundance', y='coverage', trendline='ols', title="Total RNA-Seq abundance", log_x=True)
+fig = px.scatter(pd.DataFrame({"coverage": ave_coverage_totalrnaseq, "abundance": abundances}).reset_index(),
+    x='abundance', y='coverage', trendline='ols', color="index", symbol = "index",
+    symbol_sequence= [0,1,2,3,4,13,17,19,20,22],
+    color_discrete_sequence = ['#f455ad', '#002684', '#B74258', '#62ecb4',
+    '#9c5fb4', '#600008', '#5d9344', '#ff8a4e', '#01a2ed', '#AF903F'],
+    title="Total RNA-Seq abundance", log_x=True, template="plotly_white",
+    width=400, height=400)
 fig.update_yaxes(range=[0, 100])
+fig.update_layout(showlegend=False)
+# Note: when using the color parameter above, the graph won't generate a trendline.
+# Therefore, the code has to be run twice, once with the color parameter and the
+# following block of code commented out and once without the color parameter and
+# using the following block of code to generate the p-value for the trendline
 ##### Get R2 and pval
-model = px.get_trendline_results(fig)
-results = model.iloc[0]["px_fit_results"]
-p_beta = results.pvalues[1]
-r_squared = results.rsquared
-pval = 'p-value = ' + '{:.5f}'.format(p_beta)
-fig.add_annotation(text=pval, x=0.9, y=95, showarrow=False, xanchor='right' , yanchor='auto')
+# model = px.get_trendline_results(fig)
+# results = model.iloc[0]["px_fit_results"]
+# p_beta = results.pvalues[1]
+# r_squared = results.rsquared
+# pval = 'p-value = ' + '{:.5f}'.format(p_beta)
+# fig.add_annotation(text=pval, x=0.9, y=95, showarrow=False, xanchor='right' , yanchor='auto')
+fig.update_traces(marker_size=9)
 fig.show()
-fig.write_image(os.path.join(outdir, "totalrnaseq_coverage_vs_abun.png"))
-fig.write_image(os.path.join(outdir, "totalrnaseq_coverage_vs_abun.png"))
+fig.write_image(os.path.join(outdir, "scatter_totalrnaseq_coverage_vs_abun.png"))
+fig.write_image(os.path.join(outdir, "scatter_totalrnaseq_coverage_vs_abun.svg"))
+#### vs. abundance*genome size
+fig = px.scatter(pd.DataFrame({"coverage": ave_coverage_totalrnaseq,
+    "abundanceXsize": [a*g for a,g in zip([x/100 for x in abundances],genome_sizes)]}).reset_index(),
+    x='abundanceXsize', y='coverage', trendline='ols', color="index", symbol = "index",
+    symbol_sequence= [0,1,2,3,4,13,17,19,20,22],
+    color_discrete_sequence = ['#f455ad', '#002684', '#B74258', '#62ecb4',
+    '#9c5fb4', '#600008', '#5d9344', '#ff8a4e', '#01a2ed', '#AF903F'],
+    title="Total RNA-Seq abundance", log_x=True, template="plotly_white",
+    title="Total RNA-Seq abundanceXsize", log_x=True, template="plotly_white",
+    width=400, height=400)
+fig.update_yaxes(range=[0, 100])
+fig.update_layout(showlegend=False)
+# Note: when using the color parameter above, the graph won't generate a trendline.
+# Therefore, the code has to be run twice, once with the color parameter and the
+# following block of code commented out and once without the color parameter and
+# using the following block of code to generate the p-value for the trendline
+# #### Get R2 and pval
+# model = px.get_trendline_results(fig)
+# results = model.iloc[0]["px_fit_results"]
+# p_beta = results.pvalues[1]
+# r_squared = results.rsquared
+# pval = 'p-value = ' + '{:.5f}'.format(p_beta)
+# fig.add_annotation(text=pval, x=5, y=95, showarrow=False, xanchor='right' , yanchor='auto')
+fig.update_traces(marker_size=9)
+fig.show()
+fig.write_image(os.path.join(outdir, "scatter_totalrnaseq_coverage_vs_abunXsize.png"))
+fig.write_image(os.path.join(outdir, "scatter_totalrnaseq_coverage_vs_abunXsize.svg"))
+
 
 # # OLS on model with coverage as Y and genome size and abundance as X - note: I don't we need that as it is redundant with the code section above
 # ## Metagenomics
