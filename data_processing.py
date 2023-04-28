@@ -27,45 +27,55 @@ for file in sample_csvs:
     df = pd.read_csv(file).fillna(0)
 
     # Replace _ with - and one species name and make sure all the right tools are separated
-    df["combo"] = df["combo"].str.replace("trimmed_at_phred_", "").str.replace(".fa", "").str.replace("IDBA_", "IDBA-").str.lower()
-    df["species"] = df["species"].str.replace("_", " ").str.replace("Lactobacillus", "Limosilactobacillus")
+    df["combo"] = df["combo"].str.replace("trimmed_at_phred_", "").str.replace(
+        ".fa", "").str.replace("IDBA_", "IDBA-").str.lower()
+    df["species"] = df["species"].str.replace("_", " ").str.replace(
+        "Lactobacillus", "Limosilactobacillus")
 
-    ## Separate df
-    df_genome = df[df["level"]=="Genomes"]
-    df_ssu = df[df["level"]=="ssuRNA_consensus"]
+    # Separate df
+    df_genome = df[df["level"] == "Genomes"]
+    df_ssu = df[df["level"] == "ssuRNA_consensus"]
 
-    ## Turn into heatmap format
-    df_genome = df_genome.pivot_table(index="combo", columns="species", values='coverage[%]').reset_index()
-    df_ssu = df_ssu.pivot_table(index="combo", columns="species", values='coverage[%]').reset_index()
+    # Turn into heatmap format
+    df_genome = df_genome.pivot_table(
+        index="combo", columns="species", values='coverage[%]').reset_index()
+    df_ssu = df_ssu.pivot_table(
+        index="combo", columns="species", values='coverage[%]').reset_index()
 
-    ## Generate tool columns and tidy up
-    df_genome[["trimmingscore", "rrnasortingtool", "assemblytool"]] = df_genome["combo"].str.split("_", n=-1, expand=True)
-    df_ssu[["trimmingscore", "rrnasortingtool", "assemblytool"]] = df_ssu["combo"].str.split("_", n=-1, expand=True)
+    # Generate tool columns and tidy up
+    df_genome[["trimmingscore", "rrnasortingtool", "assemblytool"]
+              ] = df_genome["combo"].str.split("_", n=-1, expand=True)
+    df_ssu[["trimmingscore", "rrnasortingtool", "assemblytool"]
+           ] = df_ssu["combo"].str.split("_", n=-1, expand=True)
     df_genome.columns.name = None
     df_ssu.columns.name = None
     df_genome = df_genome.drop(["combo"], axis=1)
     df_ssu = df_ssu.drop(["combo"], axis=1)
 
-    ## Sort values
-    df_genome = df_genome.sort_values(["assemblytool", "rrnasortingtool", "trimmingscore"])
-    df_ssu = df_ssu.sort_values(["assemblytool", "rrnasortingtool", "trimmingscore"])
+    # Sort values
+    df_genome = df_genome.sort_values(
+        ["assemblytool", "rrnasortingtool", "trimmingscore"])
+    df_ssu = df_ssu.sort_values(
+        ["assemblytool", "rrnasortingtool", "trimmingscore"])
 
-    ## Keep tool info and drop them so that dfs consist of only numbers
+    # Keep tool info and drop them so that dfs consist of only numbers
     tools = df_genome[["assemblytool", "rrnasortingtool", "trimmingscore"]]
-    df_genome = df_genome.drop(["assemblytool", "rrnasortingtool", "trimmingscore"], axis=1)
-    df_ssu = df_ssu.drop(["assemblytool", "rrnasortingtool", "trimmingscore"], axis=1)
+    df_genome = df_genome.drop(
+        ["assemblytool", "rrnasortingtool", "trimmingscore"], axis=1)
+    df_ssu = df_ssu.drop(
+        ["assemblytool", "rrnasortingtool", "trimmingscore"], axis=1)
 
     # Sort columns from most abundant to least abundant
-    df_genome = df_genome.reindex(columns=['Listeria monocytogenes','Pseudomonas aeruginosa',
-        'Bacillus subtilis','Saccharomyces cerevisiae','Salmonella enterica',
-        'Escherichia coli','Limosilactobacillus fermentum','Enterococcus faecalis',
-        'Cryptococcus neoformans','Staphylococcus aureus'])
-    df_ssu = df_ssu.reindex(columns=['Listeria monocytogenes','Pseudomonas aeruginosa',
-        'Bacillus subtilis','Saccharomyces cerevisiae','Salmonella enterica',
-        'Escherichia coli','Limosilactobacillus fermentum','Enterococcus faecalis',
-        'Cryptococcus neoformans','Staphylococcus aureus'])
+    df_genome = df_genome.reindex(columns=['Listeria monocytogenes', 'Pseudomonas aeruginosa',
+                                           'Bacillus subtilis', 'Saccharomyces cerevisiae', 'Salmonella enterica',
+                                           'Escherichia coli', 'Limosilactobacillus fermentum', 'Enterococcus faecalis',
+                                           'Cryptococcus neoformans', 'Staphylococcus aureus'])
+    df_ssu = df_ssu.reindex(columns=['Listeria monocytogenes', 'Pseudomonas aeruginosa',
+                                     'Bacillus subtilis', 'Saccharomyces cerevisiae', 'Salmonella enterica',
+                                     'Escherichia coli', 'Limosilactobacillus fermentum', 'Enterococcus faecalis',
+                                     'Cryptococcus neoformans', 'Staphylococcus aureus'])
 
-    ## Save
+    # Save
     sample_dfs_genome[file] = df_genome
     sample_dfs_ssu[file] = df_ssu
 
@@ -87,5 +97,9 @@ master_df_ssu = pd.concat([df_average_ssu, tools], axis=1)
 # Save
 if not os.path.exists(outdir):
     os.makedirs(outdir)
-master_df_genome.to_csv(os.path.join(outdir, outfilename + "_genome.csv"), index=False)
-master_df_ssu.to_csv(os.path.join(outdir, outfilename + "_ssu.csv"), index=False)
+master_df_genome.to_csv(
+    os.path.join(outdir, f"{outfilename}_genome.csv"), index=False
+)
+master_df_ssu.to_csv(
+    os.path.join(outdir, f"{outfilename}_ssu.csv"), index=False
+)
