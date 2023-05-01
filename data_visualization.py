@@ -677,7 +677,7 @@ df_taxa_F5 = df_taxa[df_taxa["sample"] == "F5"]
 df_taxa_F6 = df_taxa[df_taxa["sample"] == "F6"]
 
 # scatterplots coverage
-F4_coverage_plot = px.scatter(df_coverage_F4, color="seqtype", x="numtaxa", y="numtaxa_80", symbol="assembler", template="plotly_white",
+F4_coverage_plot = px.scatter(df_coverage_F4, color="seqtype", x="numtaxa_80", y="numtaxa", symbol="assembler", template="plotly_white",
                               symbol_sequence=[0, 1, 2, 3, 4, 17, 18], width=530, height=400, hover_name="pipeline", title="F4",
                               labels={
                                   "seq_type": "Sequencing type",
@@ -689,6 +689,7 @@ F4_coverage_plot.update_traces(marker=dict(size=8,
                                            line=dict(width=1,
                                                      color='Black')),
                                selector=dict(mode='markers'))
+F4_coverage_plot.update_yaxes(nticks=6)
 F4_coverage_plot.show()
 F4_coverage_plot.write_image(os.path.join(
     outdir, "taxanums_F4.png"))
@@ -696,7 +697,7 @@ F4_coverage_plot.write_image(os.path.join(
     outdir, "taxanums_F4.svg"))
 
 
-F5_coverage_plot = px.scatter(df_coverage_F5, color="seqtype", x="numtaxa", y="numtaxa_80", symbol="assembler", template="plotly_white",
+F5_coverage_plot = px.scatter(df_coverage_F5, color="seqtype", x="numtaxa_80", y="numtaxa", symbol="assembler", template="plotly_white",
                               symbol_sequence=[0, 1, 2, 3, 4, 17, 18], width=530, height=400, hover_name="pipeline", title="F5",
                               labels={
                                   "seq_type": "Sequencing type",
@@ -715,7 +716,7 @@ F5_coverage_plot.write_image(os.path.join(
     outdir, "taxanums_F5.svg"))
 
 
-F6_coverage_plot = px.scatter(df_coverage_F6, color="seqtype", x="numtaxa", y="numtaxa_80", symbol="assembler", template="plotly_white",
+F6_coverage_plot = px.scatter(df_coverage_F6, color="seqtype", x="numtaxa_80", y="numtaxa", symbol="assembler", template="plotly_white",
                               symbol_sequence=[0, 1, 2, 3, 4, 17, 18], width=530, height=400, hover_name="pipeline", title="F6",
                               labels={
                                   "seq_type": "Sequencing type",
