@@ -750,3 +750,15 @@ ratio_boxplot.write_image(os.path.join(
     outdir, "ratio_boxplot.png"))
 ratio_boxplot.write_image(os.path.join(
     outdir, "ratio_boxplot.svg"))
+
+# Print ranges of prokaryotes:eukaryotes ratio
+print("Ranges of prokaryotes:eukaryotes ratio:")
+for i in ["F4", "F5", "F6"]:
+    for j in ["Metagenomics", "Total RNA-Seq"]:
+        df = df_taxa[(df_taxa["sample"] == i) & (df_taxa["seqtype"] == j)]
+        # Replace infinite updated data with nan
+        df.replace([np.inf, -np.inf], np.nan, inplace=True)
+        # Drop rows with NaN
+        df.dropna(inplace=True)
+        range = df["prok:euk"].max() - df["prok:euk"].min()
+        print(i, j, range)
